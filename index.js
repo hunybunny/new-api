@@ -1,19 +1,28 @@
 const express = require ('express');
 const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+const fs = require('fs');
 
 app.get('/', (req, res) => {
     res.send('working !!');
 });
 
-app.get('/data', (req, res) => {
-  res.json({
-    name: "Amit",
-    age: 25,
-    city: "Delhi"
-  });
+app.get('/api/users', (req, res) => {
+    const users = JSON.parse(fs.readFileSync('users.json'));
+    res.json(users);
 });
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+app.post('/api/users', (req, res) => {
+    const users = JSON.parse(fs.readFileSync('users.json'));
+    const newUser = req.body;
+    users.push(newUser);
+    fs.writeFileSync('users.json', JSON.stringify(users, null, 2));
+    res.send('✅ User added!');
+  });
+  
+
+app.listen(PORT, () => {
+    console.log('Server running on ${PORT}');
   });
   
